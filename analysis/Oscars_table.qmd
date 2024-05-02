@@ -1,0 +1,301 @@
+---
+title: "Colorful_Dataframes"
+format: html
+editor: visual
+---
+
+## **Transform your R Dataframes: Styles, 🎨 Colors, and 😎 Emojis**
+
+```{r, echo = FALSE}
+# install.packages("tidyverse")
+# install.packages("knitr")
+# install.packages("kableExtra")
+# install.packages("reactablefrmtr")
+# install.packages("htmltools")
+# install.packages("formattable")
+# install.packages("flextable")
+# install.packages("ggplot2")
+# install.packages("viridis")
+```
+
+Libraries
+
+```{r, echo = FALSE}
+library(reshape2)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+#library(reactablefrmtr)
+library(htmltools)
+library(formattable)
+library(flextable)
+library(ggplot2)
+library(viridisLite)
+library(skimr)
+library(dplyr)
+```
+
+Example:
+
+```{r, echo = FALSE}
+
+oscars <- read.csv("/Users/ulrike_imac_air/projects/Trial_and_error/data/the_oscar_award.csv")
+```
+
+```{r, echo = FALSE}
+
+head(oscars)
+# skim(oscars)
+```
+
+```{r}
+library(skimr)
+
+skim(oscars)
+```
+
+```{r}
+# Count NA values per category
+na_counts <- colSums(is.na(oscars))
+
+# Print the result
+print(na_counts)
+
+```
+
+```{r}
+library(dplyr)
+
+top_movies <- oscars %>%
+  group_by(film, year_film) %>%
+  summarise(
+    nominations = n(),
+    oscars_won = sum(as.logical(winner)),
+    percentage_won = round(sum(oscars_won) / nominations * 100, 1),
+    year_film = first(year_film), 
+    year_ceremony = first(year_ceremony),  
+    .groups = 'drop'
+  ) %>%
+  filter(film != "") %>%
+  arrange(desc(nominations), desc(oscars_won)) %>%
+  head(n = 20)
+# options(width = 100, dplyr.print_max = Inf)
+```
+
+```{r}
+kable(top_movies, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+# install.packages("dplyr")
+library(dplyr)
+
+top_movies_wins <- oscars %>%
+  group_by(film, year_film) %>%
+  summarise(
+    nominations = n(),
+    oscars_won = sum(as.logical(winner)),
+    percentage_won = round(sum(oscars_won) / nominations * 100, 1),
+    year_film = first(year_film), 
+    year_ceremony = first(year_ceremony),  
+    .groups = 'drop'
+  ) %>%
+  filter(film != "") %>%
+  arrange(desc(oscars_won), desc(nominations)) %>%
+  head(n = 20)
+# options(width = 100, dplyr.print_max = Inf)
+```
+
+```{r}
+kable(top_movies_wins, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+library(dplyr)
+
+top_movies_win_percentage <- oscars %>%
+  group_by(film, year_film) %>%
+  summarise(
+    nominations = n(),
+    oscars_won = sum(as.logical(winner)),
+    percentage_won = round(sum(oscars_won) / nominations * 100, 1),
+    year_film = first(year_film), 
+    year_ceremony = first(year_ceremony),  
+    .groups = 'drop'
+  ) %>%
+  filter(film != "") %>%
+  arrange(desc(percentage_won), desc(nominations)) %>%
+  head(n = 20)
+# options(width = 100, dplyr.print_max = Inf)
+```
+
+```{r}
+kable(top_movies_win_percentage, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+library(dplyr)
+
+most_nominations <- oscars %>%
+  filter(!is.na(film) & film != "") %>%  # Exclude rows where the 'film' column is NA or empty
+  group_by(year_ceremony, film) %>% 
+  summarise(num_nominations = n()) %>%
+  group_by(year_ceremony) %>%  
+  mutate(max_nominations = max(num_nominations)) %>%
+  filter(num_nominations == max_nominations) %>%
+  arrange(year_ceremony, desc(num_nominations)) %>%
+  ungroup()
+
+# Print the result
+print(most_nominations)
+
+kable(most_nominations, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+library(dplyr)
+
+most_wins <- oscars %>%
+  filter(!is.na(film) & film != "") %>% 
+  filter(winner == "True") %>%
+  group_by(year_ceremony, film) %>% 
+  summarise(num_wins = n()) %>% 
+  group_by(year_ceremony) %>%  
+  mutate(max_wins = max(num_wins)) %>%
+  filter(num_wins == max_wins) %>%
+  arrange(year_ceremony, desc(num_wins)) %>%
+  ungroup() 
+
+# Print the result
+print(most_wins)
+
+
+kable(most_wins, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+library(dplyr)
+
+nottop_movies_win_percentage <- oscars %>%
+  group_by(film, year_film) %>%
+  summarise(
+    nominations = n(),
+    oscars_won = sum(as.logical(winner)),
+    percentage_won = round(sum(oscars_won) / nominations * 100, 1),
+    year_film = first(year_film), 
+    year_ceremony = first(year_ceremony),  
+    .groups = 'drop'
+  ) %>%
+  filter(film != "") %>%
+  arrange((percentage_won), desc(nominations)) %>%
+  head(n = 20)
+# options(width = 100, dplyr.print_max = Inf)
+```
+
+```{r}
+kable(nottop_movies_win_percentage, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+library(dplyr)
+
+category_counts <- oscars %>%
+  count(category)
+
+total_categories <- nrow(category_counts)
+
+print(total_categories)
+```
+
+```{r}
+category <- oscars %>%
+  group_by(category) %>%
+  summarise(
+    nominations = n(),
+    oscars_won = sum(as.logical(winner)),
+    average_nominees_category = round(sum(nominations) / oscars_won, 0),
+    .groups = 'drop'
+  ) %>%
+  filter(category != "") %>%
+  arrange((category)) %>%
+  head(n = 130)
+# options(width = 100, dplyr.print_max = Inf)
+kable(category, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+library(dplyr)
+
+names <- oscars %>%
+  group_by(name) %>%
+  summarise(
+    nominations = n(),
+    oscars_won = sum(as.logical(winner)),
+    percentage_won = round(sum(oscars_won) / nominations * 100, 1),
+    .groups = 'drop'
+  ) %>%
+  filter(name != "") %>%
+  arrange(desc(oscars_won)) %>%
+  head(n = 20)
+
+kable(names, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+actors_nominations <- oscars %>%
+  filter(category %in% c("ACTOR", "ACTRESS", "ACTOR IN A SUPPORTING ROLE", "ACTRESS IN A SUPPORTING ROLE", "ACTOR IN A LEADING ROLE", "ACTRESS IN A LEADING ROLE")) %>%
+  group_by(name) %>%
+  summarise(
+    nominations = n(),
+    oscars_won = sum(as.logical(winner)),
+    percentage_won = round(sum(oscars_won) / nominations * 100, 1),
+    .groups = 'drop'
+  ) %>%
+  filter(name != "") %>%
+  arrange(desc(nominations)) %>%
+  head(n = 20)
+
+# options(width = 100, dplyr.print_max = Inf)
+
+kable(actors_nominations, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
+
+```{r}
+
+actors_won <- oscars %>%
+  filter(category %in% c("ACTOR", "ACTRESS", "ACTOR IN A SUPPORTING ROLE", "ACTRESS IN A SUPPORTING ROLE", "ACTOR IN A LEADING ROLE", "ACTRESS IN A LEADING ROLE")) %>%
+  group_by(name) %>%
+  summarise(
+    nominations = n(),
+    oscars_won = sum(as.logical(winner)),
+    percentage_won = round(sum(oscars_won) / nominations * 100, 1),
+    .groups = 'drop'
+  ) %>%
+  filter(name != "") %>%
+  arrange(desc(oscars_won)) %>%
+  head(n = 20)
+
+# options(width = 100, dplyr.print_max = Inf)
+
+kable(actors_won, "html") %>%
+  kable_styling("striped", full_width = F) %>%
+  row_spec(0, background = "#5E17EB", color = "white")
+```
