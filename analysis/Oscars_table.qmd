@@ -45,13 +45,6 @@ oscars <- read.csv("/Users/ulrike_imac_air/projects/Trial_and_error/data/the_osc
 ```{r, echo = FALSE}
 
 head(oscars)
-# skim(oscars)
-```
-
-```{r}
-library(skimr)
-
-skim(oscars)
 ```
 
 ```{r}
