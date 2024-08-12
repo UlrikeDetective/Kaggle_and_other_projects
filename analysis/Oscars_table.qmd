@@ -31,7 +31,6 @@ library(formattable)
 library(flextable)
 library(ggplot2)
 library(viridisLite)
-library(skimr)
 library(dplyr)
 ```
 
